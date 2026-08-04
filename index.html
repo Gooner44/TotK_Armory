@@ -625,12 +625,19 @@ const GT_SLUG = {
   phantom:"Phantom", radiant:"NightGlow", royalguard:"RoyalGuard", rubber:"Rubber",
   stealth:"Sheikah", skyward:"SkywardSword", snowquill:"Rito", soldiers:"HyliaArmor",
   time:"OcarinaOfTime", tingle:"Tingle", twilight:"TwilightPrincess", wind:"WindWaker",
-  yiga:"Yiga", zora:"Zora", zonaite:"Zonanium", divinehelms:"Ancient", archaic:"Others"
+  yiga:"Yiga", zora:"Zora", zonaite:"Zonanium", divinehelms:"Ancient", archaic:"Others",
+  masks:"Others", gerudojewelry:"Others", boots:"Others", coliseum:"Others",
+  coliseum_upgradable:"Others", misc:"Others", misc_upgradable:"Others"
 };
+// A handful of gamertw item-page slugs don't match the standard "replace spaces with
+// dashes" pattern derived from the piece's display name. Listed explicitly rather than
+// guessed, each confirmed against the live gamertw page.
+const GT_NAME_OVERRIDE = { misc_cece_hat: "Cece-Hat" };
 function gtUrl(set, piece){
   const slug = GT_SLUG[set.id];
   if(!slug) return null;
-  return "https://www.gamertw.com/en/zelda/totk/armor/" + slug + "/" + piece.name.replace(/ /g, "-");
+  const name = GT_NAME_OVERRIDE[piece.id] || piece.name.replace(/ /g, "-");
+  return "https://www.gamertw.com/en/zelda/totk/armor/" + slug + "/" + name;
 }
 
 // Full-set portrait shown on the right of each true 3-piece set's card.
@@ -845,18 +852,18 @@ function tierCount(set, piece){
   return t ? t.length : 0;
 }
 
-async function loadState(){
+function loadState(){
   try{
-    const r = await window.storage.get(STORAGE_KEY);
-    if(r && r.value){ state = JSON.parse(r.value); }
-  }catch(e){ /* no saved state yet */ }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){ /* no saved state yet, or storage unavailable */ }
   render();
 }
 let saveTimer = null;
 function saveState(){
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(async ()=>{
-    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  saveTimer = setTimeout(()=>{
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   }, 150);
 }
 
