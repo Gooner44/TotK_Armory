@@ -261,6 +261,29 @@
   footer a{color:var(--ink-faint);text-decoration:underline;text-decoration-color:var(--card-border);}
   footer a:hover{color:var(--teal);}
 
+  .donate-bar{
+    position:fixed;right:18px;bottom:18px;z-index:500;
+    display:flex;align-items:center;gap:2px;
+    background:var(--gold);border-radius:999px;
+    box-shadow:0 8px 24px rgba(0,0,0,.4);
+    transition:transform .15s;
+  }
+  .donate-bar:hover{transform:translateY(-2px);}
+  .donate-bar a{
+    color:#241a06;font-family:var(--sans);font-weight:700;font-size:13.5px;
+    text-decoration:none;padding:11px 16px 11px 18px;white-space:nowrap;
+  }
+  .donate-close{
+    background:transparent;border:none;color:#241a06;opacity:.6;cursor:pointer;
+    font-size:16px;line-height:1;padding:6px 14px 6px 4px;
+  }
+  .donate-close:hover{opacity:1;}
+  .donate-bar.dismissed{display:none;}
+  @media (max-width:560px){
+    .donate-bar{right:12px;bottom:12px;}
+    .donate-bar a{font-size:12.5px;padding:9px 12px 9px 14px;}
+  }
+
   @media (max-width:560px){
     .wrap{padding:18px 14px 90px;}
     .piece-main{min-width:0;}
@@ -324,6 +347,11 @@
     Double‑check quantities in‑game — TOTK's own systems occasionally change with game updates.
   </footer>
 
+</div>
+
+<div class="donate-bar" id="donateBar">
+  <a href="https://www.buymeacoffee.com/Spammer44" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+  <button class="donate-close" id="donateClose" aria-label="Dismiss">×</button>
 </div>
 
 <script>
@@ -1307,6 +1335,16 @@ document.getElementById("resetBtn").addEventListener("click", (e)=>{
   state = { obtained:{}, tiers:{} };
   saveState();
   render();
+});
+
+const DONATE_DISMISS_KEY = "totk-donate-dismissed";
+const donateBar = document.getElementById("donateBar");
+if(localStorage.getItem(DONATE_DISMISS_KEY) === "1"){
+  donateBar.classList.add("dismissed");
+}
+document.getElementById("donateClose").addEventListener("click", ()=>{
+  donateBar.classList.add("dismissed");
+  try{ localStorage.setItem(DONATE_DISMISS_KEY, "1"); }catch(e){}
 });
 
 loadState();
